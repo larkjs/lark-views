@@ -49,7 +49,7 @@ For more examples take a look at the [tests](./test/index.js)
 
 ## Debug
 
-Set the `DEBUG` environment variable to `koa-views` when starting your server.
+Set the `DEBUG` environment variable to `lark-views` when starting your server.
 
 ```bash
 $ DEBUG=lark-views
