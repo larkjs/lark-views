@@ -1,6 +1,6 @@
 {
   "name": "lark-views",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Template rendering middleware for koa, supporting many template engines",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "app-root-path": "^1.0.0",
     "co-views": "~0.2.0",
-    "debug": "~0.7.4",
+    "debug": "^2.1.1",
     "koa-send": "^1.2.4",
     "object-assign": "^2.0.0"
   },
@@ -19,7 +19,7 @@
     "mocha": "^2.0.1",
     "should": "^4.3.0",
     "supertest": "^0.15.0",
-    "underscore": "~1.6.0"
+    "underscore": "~1.7.0"
   },
   "repository": {
     "type": "git",
