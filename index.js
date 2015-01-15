@@ -20,22 +20,19 @@ var base = require('app-root-path').toString();
  * @api public
  */
 
-module.exports = function (path, opts) {
+module.exports = function (opts) {
 
-  // set path relative to the directory the function was called + path
-  if (!path || typeof path == 'object') {
-    opts = path;
-    path = base;
-  } else {
-    path = resolve(base, path);
-  }
+  opts = opts||{};
+  // default dircetory is `views`
+  opts.directory = opts.directory || 'views';
+  opts.path = resolve(base, opts.directory);
 
-  opts = opts || {};
-
+  debug(fmt('path: %s'), opts.path);
   // default extension to `html`
-  if (!opts.default) opts.default = 'html';
+  opts.default = opts.default || 'html';
 
-  if (opts) debug(fmt('options: %s', opts));
+
+ debug(fmt(opts));
 
   return function *views (next) {
     if (this.render) return;
@@ -60,7 +57,7 @@ module.exports = function (path, opts) {
       var ext = opts.default;
       if(view[view.length - 1] === '/'){
         view += 'index';
-      }      
+      }
       var file = fmt('%s.%s', view, ext);
 
       locals = locals || {};
@@ -69,9 +66,9 @@ module.exports = function (path, opts) {
       debug(fmt('render `%s` with %j', file, locals));
 
       if (ext == 'html' && !opts.map) {
-        yield send(this, join(path, file));
+        yield send(this, join(opts.path, file));
       } else {
-        var render = cons(path, opts);
+        var render = cons(opts.path, opts);
         this.body = yield render(view, locals);
       }
 

@@ -1,10 +1,10 @@
 {
   "name": "lark-views",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Template rendering middleware for koa, supporting many template engines",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --harmony-generators --require should test/"
+    "test": "./node_modules/.bin/mocha --harmony --require should test/"
   },
   "dependencies": {
     "app-root-path": "^1.0.0",
