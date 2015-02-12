@@ -54,19 +54,22 @@ module.exports = function (opts) {
 
         this.render = function *(view, locals) {
             var ext = opts.default;
+            var extname = path.extname(view);
             var file = view;
             if (file[file.length - 1] === '/') {
                 file += 'index';
             }
-            if(!path.extname(file)){
+            if(!extname){
                 file = fmt('%s.%s', file, ext);
+            }else{
+                ext = extname;
             }
             locals = locals || {};
             locals = assign(locals, this.locals);
 
             debug(fmt('render `%s` with %j', file, locals));
 
-            if (ext == 'html' && !opts.map) {
+            if (ext == 'html' && (!opts.map || (opts.map && !opts.map.html))) {
                 yield send(this, join(opts.path, file));
             } else {
                 var render = cons(opts.path, opts);
