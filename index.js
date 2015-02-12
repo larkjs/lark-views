@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -11,6 +10,7 @@ var join = require('path').join;
 var cons = require('co-views');
 var send = require('koa-send');
 var base = require('app-root-path').toString();
+var path = require('path');
 
 /**
  * Add `render` method
@@ -22,59 +22,59 @@ var base = require('app-root-path').toString();
 
 module.exports = function (opts) {
 
-  opts = opts||{};
-  // default dircetory is `views`
-  opts.directory = opts.directory || 'views';
-  opts.path = resolve(base, opts.directory);
+    opts = opts || {};
+    // default dircetory is `views`
+    opts.directory = opts.directory || 'views';
+    opts.path = resolve(base, opts.directory);
 
-  debug(fmt('path: %s'), opts.path);
-  // default extension to `html`
-  opts.default = opts.default || 'html';
+    debug(fmt('path: %s'), opts.path);
+    // default extension to `html`
+    opts.default = opts.default || 'html';
 
+    debug(fmt(opts));
 
- debug(fmt(opts));
+    return function *views(next) {
+        if (this.render) return;
 
-  return function *views (next) {
-    if (this.render) return;
+        /**
+         * App-specific `locals`, but honor upstream
+         * middlewares that may have already set this.locals.
+         */
 
-    /**
-     * App-specific `locals`, but honor upstream
-     * middlewares that may have already set this.locals.
-     */
+        this.locals = this.locals || {};
 
-    this.locals = this.locals || {};
+        /**
+         * Render `view` with `locals`.
+         *
+         * @param {String} view
+         * @param {Object} locals
+         * @return {GeneratorFunction}
+         * @api public
+         */
 
-    /**
-     * Render `view` with `locals`.
-     *
-     * @param {String} view
-     * @param {Object} locals
-     * @return {GeneratorFunction}
-     * @api public
-     */
+        this.render = function *(view, locals) {
+            var ext = opts.default;
+            var file = view;
+            if (file[file.length - 1] === '/') {
+                file += 'index';
+            }
+            if(!path.extname(file)){
+                file = fmt('%s.%s', file, ext);
+            }
+            locals = locals || {};
+            locals = assign(locals, this.locals);
 
-    this.render = function *(view, locals) {
-      var ext = opts.default;
-      if(view[view.length - 1] === '/'){
-        view += 'index';
-      }
-      var file = fmt('%s.%s', view, ext);
+            debug(fmt('render `%s` with %j', file, locals));
 
-      locals = locals || {};
-      locals = assign(locals, this.locals);
+            if (ext == 'html' && !opts.map) {
+                yield send(this, join(opts.path, file));
+            } else {
+                var render = cons(opts.path, opts);
+                this.body = yield render(view, locals);
+            }
+            this.type = 'text/html';
+        };
 
-      debug(fmt('render `%s` with %j', file, locals));
-
-      if (ext == 'html' && !opts.map) {
-        yield send(this, join(opts.path, file));
-      } else {
-        var render = cons(opts.path, opts);
-        this.body = yield render(view, locals);
-      }
-
-      this.type = 'text/html';
-    };
-
-    yield next;
-  }
+        yield next;
+    }
 };
