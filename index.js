@@ -76,6 +76,9 @@ module.exports = function (opts) {
                 var render = cons(opts.path, opts);
                 this.body = yield render(view, locals);
             }
+            if (undefined === this.body) {
+                throw new Error('Can not render ' + file);
+            }
             this.type = 'text/html';
         };
 
