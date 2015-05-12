@@ -1,13 +1,16 @@
 
-var request = require('supertest');
+//To work around mocha test
+process.mainModule = module;
+
 var views = require('../');
+var request = require('supertest');
 var should = require('should');
 var koa = require('koa');
 
 describe('koa-views', function () {
   it('have a render method', function (done) {
     var app = koa()
-    .use(views({directory:'test'}))
+    .use(views({directory:'./fixtures'}))
     .use(function *() {
       this.render.should.ok;
       this.render.should.Function;
@@ -19,9 +22,9 @@ describe('koa-views', function () {
 
   it('default to html', function (done) {
     var app = koa()
-    .use(views({directory:'test'}))
+    .use(views({directory:'./fixtures'}))
     .use(function *() {
-      yield this.render('./fixtures/basic')
+      yield this.render('./basic')
     });
 
     request(app.listen()).get('/')
@@ -32,9 +35,9 @@ describe('koa-views', function () {
 
   it('default to [ext] if a default engine is set', function (done) {
     var app = koa()
-    .use(views({directory:'test', default: 'jade' }))
+    .use(views({directory:'./fixtures', default: 'jade' }))
     .use(function *() {
-      yield this.render('./fixtures/basic')
+      yield this.render('./basic')
     });
 
     request(app.listen()).get('/')
@@ -45,10 +48,10 @@ describe('koa-views', function () {
 
   it('set and render locals', function (done) {
     var app = koa()
-    .use(views({directory:'test', default: 'jade' }))
+    .use(views({directory:'./fixtures', default: 'jade' }))
     .use(function *() {
       this.locals.engine = 'jade';
-      yield this.render('./fixtures/global-locals')
+      yield this.render('./global-locals')
     });
 
     request(app.listen()).get('/')
@@ -60,7 +63,7 @@ describe('koa-views', function () {
   // #25
   it('works with circular references in locals', function (done) {
     var app = koa()
-    .use(views({directory:'test', default: 'jade' }))
+    .use(views({directory:'./', default: 'jade' }))
     .use(function *() {
       this.locals = {
         a: {},
@@ -84,7 +87,7 @@ describe('koa-views', function () {
 
   it('`map` given `engine` to given file `ext`', function (done) {
     var app = koa()
-    .use(views({directory:'test', map: {html: 'underscore'} }))
+    .use(views({directory:'./', map: {html: 'underscore'} }))
     .use(function *() {
       this.locals.engine = 'underscore';
       yield this.render('./fixtures/underscore')
@@ -98,7 +101,7 @@ describe('koa-views', function () {
 
   it('merge global and local locals ', function (done) {
     var app = koa()
-    .use(views({directory:'test', default: 'jade' }))
+    .use(views({directory:'./', default: 'jade' }))
     .use(function *() {
       this.locals.engine = 'jade';
 

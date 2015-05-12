@@ -9,8 +9,9 @@ var fmt = require('util').format;
 var join = require('path').join;
 var cons = require('co-views');
 var send = require('koa-send');
-var base = require('app-root-path').toString();
 var path = require('path');
+var base = path.dirname(process.mainModule.filename);
+
 
 /**
  * Add `render` method
