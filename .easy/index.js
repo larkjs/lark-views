@@ -141,6 +141,23 @@ class Views {
             }
         });
     }
+    saveInstance() {
+        let name = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+
+        debug("Logger: saving instance");
+        if (savedInstances[name]) {
+            throw new Error('Fail to save view instance as "' + name + '" : name duplicated with existing instance');
+        }
+        savedInstances[name] = this;
+        return this;
+    }
+    static instance() {
+        let name = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+
+        return savedInstances[name] || null;
+    }
 }
+
+const savedInstances = {};
 
 exports.default = Views;

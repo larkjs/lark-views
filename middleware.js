@@ -11,7 +11,7 @@ import Views 	from './';
 
 const debug = _debug("lark-views");
 
-function middleware (options, output) {
+function middleware (options) {
 	debug("Middleware: create middleware");
 	if ('string' !== typeof options.path) {
 		options.path = '';
@@ -19,10 +19,7 @@ function middleware (options, output) {
 	if (!path.isAbsolute(options.path)) {
 		options.path = path.join(path.dirname(caller()), options.path);
 	}
-	const views = new Views(options);
-  if (output) {
-    output.views = views;
-  }
+	const views = new Views(options).saveInstance();
 	return async (ctx, next) => {
 		debug("Middleware: ctx.render enabled!");
 		ctx.render = async (viewPath, locals) => {

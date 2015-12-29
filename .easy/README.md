@@ -18,23 +18,42 @@ $ npm install lark-views
 
 ## Example
 
+Use _lark-views_ as a Class.
+
 ```js
-// Must be used before any router is used
-app.use(views('views', {
+import Views from 'lark-views';
+const views = new Views({
+  path: 'views',
   map: {
-    html: underscore
+    tpl: 'ejs',
+  }
+});
+views.render('a.tpl', { foo: "bar" })
+     .then(data => console.log(data))
+     .catch(e => console.error(e.stack));
+```
+
+Use _lark-views_ as a koa middleware
+
+```js
+import views from 'lark-views/middleware';
+import Koa   from 'koa';
+
+const app = new Koa();
+
+// Must be used before any router is used
+app.use(views({
+  path: 'views',
+  map: {
+    tpl: 'ejs',
   }
 }));
 
-app.use(function* (next) {
-  this.locals = {
-    session: this.session,
-    title: 'app'
-  };
-
-  yield this.render('user', {
+app.use(async (ctx, next) => {
+  await ctx.render('user.tpl', {
     user: 'John'
   });
+  await next();
 });
 ```
 
@@ -42,10 +61,16 @@ For more examples take a look at the [tests](./test/index.js)
 
 ## API
 
-#### `views([path, opts])`
+#### `views([opts])`
 
-* `path ()`: directory form [rootPath](https://github.com/inxilpro/node-app-root-path)
-* `opts`: these options go straight to [co-views](https://github.com/visionmedia/co-views).
+* `opts`: see below
+* `opts.map`: map from extname to template engine.
+* `opts.path`: directory from [callerPath](https://github.com/totherik/caller) if it is not an absolute path.
+
+#### `middleware([opts)`
+* `opts`: the same as in `views[opts]`;
+
+when `middleware(opts)` is called, `Views.instance()` will return the instance created in that middleware
 
 ## Debug
 

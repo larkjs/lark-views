@@ -67,9 +67,10 @@ For more examples take a look at the [tests](./test/index.js)
 * `opts.map`: map from extname to template engine.
 * `opts.path`: directory from [callerPath](https://github.com/totherik/caller) if it is not an absolute path.
 
-#### `middleware([opts[,output]])`
+#### `middleware([opts)`
 * `opts`: the same as in `views[opts]`;
-* `output`: exports Views instance as output.views, if this argument is given.
+
+when `middleware(opts)` is called, `Views.instance()` will return the instance created in that middleware
 
 ## Debug
 

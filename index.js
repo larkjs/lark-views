@@ -117,6 +117,19 @@ class Views {
             }
         });
     }
+    saveInstance (name = 'default') {
+        debug("Logger: saving instance");
+        if (savedInstances[name]) {
+            throw new Error('Fail to save view instance as "' + name + '" : name duplicated with existing instance');
+        }
+        savedInstances[name] = this;
+        return this;
+    }
+    static instance (name = 'default') {
+        return savedInstances[name] || null;
+    }
 }
+
+const savedInstances = {};
 
 export default Views;

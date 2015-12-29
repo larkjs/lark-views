@@ -30,7 +30,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const debug = (0, _debug3.default)("lark-views");
 
-function middleware(options, output) {
+function middleware(options) {
 	debug("Middleware: create middleware");
 	if ('string' !== typeof options.path) {
 		options.path = '';
@@ -38,10 +38,7 @@ function middleware(options, output) {
 	if (!_path2.default.isAbsolute(options.path)) {
 		options.path = _path2.default.join(_path2.default.dirname((0, _caller2.default)()), options.path);
 	}
-	const views = new _2.default(options);
-	if (output) {
-		output.views = views;
-	}
+	const views = new _2.default(options).saveInstance();
 	return (function () {
 		var ref = _asyncToGenerator(function* (ctx, next) {
 			debug("Middleware: ctx.render enabled!");
