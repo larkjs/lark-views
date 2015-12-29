@@ -2,12 +2,12 @@
     "name": "lark-views",
     "version": "1.0.0",
     "description": "Template rendering middleware for koa, supporting many template engines",
-    "main": ".easy",
+    "main": "index.js",
     "engines": {
         "node": ">=0.12"
     },
     "scripts": {
-        "test": "cd .easy && rm -rf node_modules && ln -s ../node_modules node_modules && ./node_modules/.bin/mocha --require should test/"
+        "test": "./node_modules/.bin/mocha --require should test/"
     },
     "dependencies": {
         "caller": "^1.0.1",
@@ -41,11 +41,5 @@
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/larkjs/lark-views/issues"
-    },
-    "easy": {
-        "main": "index.js",
-        "scripts": {
-            "test": "./node_modules/.bin/mocha --require should test/"
-        }
     }
 }

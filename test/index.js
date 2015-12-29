@@ -1,120 +1,53 @@
+/**
+ * Lark-views test
+ **/
+'use strict';
 
-//To work around mocha test
-process.mainModule = module;
+import _debug   from 'debug';
+import app      from '../example/koa-app';
+import test     from 'supertest';
 
-var views = require('../');
-var request = require('supertest');
-var should = require('should');
-var koa = require('koa');
+const debug   = _debug('lark-views');
+const request = test.agent(app.listen(3000));
 
-describe('koa-views', function () {
-  it('have a render method', function (done) {
-    var app = koa()
-    .use(views({directory:'./fixtures'}))
-    .use(function *() {
-      this.render.should.ok;
-      this.render.should.Function;
+describe('request on render=a', () => {
+    it('should return rendered template a.tpl with ejs', done => {
+        request.get('/?render=a')
+              .expect(200)
+              .expect('This is template a. The variable is "request url is /?render=a".\n', done);
     });
-
-    request(app.listen()).get('/')
-      .expect(404, done)
-  });
-
-  it('default to html', function (done) {
-    var app = koa()
-    .use(views({directory:'./fixtures'}))
-    .use(function *() {
-      yield this.render('./basic')
+    it('should return rendered template a.tpl with ejs, using cache', done => {
+        request.get('/?render=a')
+              .expect(200)
+              .expect('This is template a. The variable is "request url is /?render=a".\n', done);
     });
+});
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:html/)
-      .expect(200, done)
-  });
-
-  it('default to [ext] if a default engine is set', function (done) {
-    var app = koa()
-    .use(views({directory:'./fixtures', default: 'jade' }))
-    .use(function *() {
-      yield this.render('./basic')
+describe('request on render=b', () => {
+    it('should return template b.js without rendering', done => {
+        request.get('/?render=b')
+              .expect(200)
+              .expect('"use strict";\n\nconsole.log("This is static js file b");', done);
     });
+});
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  });
-
-  it('set and render locals', function (done) {
-    var app = koa()
-    .use(views({directory:'./fixtures', default: 'jade' }))
-    .use(function *() {
-      this.locals.engine = 'jade';
-      yield this.render('./global-locals')
+describe('request on render=c', () => {
+    it('should return template c.html without rendering', done => {
+        request.get('/?render=c')
+              .expect(200)
+              .expect('<h1>How are you!</h1>\n', done);
     });
+});
 
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  });
-
-  // #25
-  it('works with circular references in locals', function (done) {
-    var app = koa()
-    .use(views({directory:'./', default: 'jade' }))
-    .use(function *() {
-      this.locals = {
-        a: {},
-        app: app
-      };
-
-      this.locals.a.a = this.locals.a;
-
-      yield this.render('./fixtures/global-locals', {
-        app: app,
-        b: this.locals,
-        engine: 'jade'
-      })
+describe('request on render=d', () => {
+    it('should return template d.jade with jade', done => {
+        request.get('/?render=d')
+              .expect(200)
+              .expect('<!DOCTYPE html><html lang="en"><head><title></title><script type="text/javascript">if (foo) bar(1 + 5)</script></head><body><h1>Jade - node template engine</h1><div id="container" class="col"><p>Get on it!</p><p>Jade is a terse and simple templating language with a\nstrong focus on performance and powerful features.</p></div></body></html>', done);
     });
-
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  });
-
-  it('`map` given `engine` to given file `ext`', function (done) {
-    var app = koa()
-    .use(views({directory:'./', map: {html: 'underscore'} }))
-    .use(function *() {
-      this.locals.engine = 'underscore';
-      yield this.render('./fixtures/underscore')
+    it('should return template d.jade with jade, using cache', done => {
+        request.get('/?render=d')
+              .expect(200)
+              .expect('<!DOCTYPE html><html lang="en"><head><title></title><script type="text/javascript">if (foo) bar(1 + 5)</script></head><body><h1>Jade - node template engine</h1><div id="container" class="col"><p>Get on it!</p><p>Jade is a terse and simple templating language with a\nstrong focus on performance and powerful features.</p></div></body></html>', done);
     });
-
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:underscore/)
-      .expect(200, done)
-  });
-
-  it('merge global and local locals ', function (done) {
-    var app = koa()
-    .use(views({directory:'./', default: 'jade' }))
-    .use(function *() {
-      this.locals.engine = 'jade';
-
-      yield this.render('./fixtures/locals', {
-        type: 'basic'
-      })
-    });
-
-    request(app.listen()).get('/')
-      .expect('Content-Type', /html/)
-      .expect(/basic:jade/)
-      .expect(200, done)
-  });
-
-  // TODO: #23
 });

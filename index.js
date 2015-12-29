@@ -1,87 +1,122 @@
 /**
- * Module dependencies.
- */
+ * Lark-Views
+ **/
+'use strict';
 
-var debug = require('debug')('lark-views');
-var resolve = require('path').resolve;
-var assign = require('object-assign');
-var fmt = require('util').format;
-var join = require('path').join;
-var cons = require('co-views');
-var send = require('koa-send');
-var path = require('path');
-var base = path.dirname(process.mainModule.filename);
+import _debug   from 'debug';
+import cache    from 'lru-cache';
+import caller   from 'caller';
+import extend   from 'extend';
+import fs       from 'fs';
+import path     from 'path';
 
+const debug = _debug('lark-views');
 
-/**
- * Add `render` method
- *
- * @param {String} path (optional)
- * @param {Object} opts (optional)
- * @api public
- */
+const defaultPath   = 'views';
+const defaultEngine = 'ejs';
 
-module.exports = function (opts) {
+class Views {
+    constructor (options = {}) {
+        debug("Views: Views.constructor");
+        if ('string' !== typeof options.path) {
+            options.path = defaultPath;
+        }
+        if (!path.isAbsolute(options.path)) {
+            options.path = path.join(path.dirname(caller()), options.path);
+        }
+        debug("Views: path is " + options.path);
+        if ('string' !== typeof options.default) {
+            options.default = defaultEngine;
+        }
+        options.map = options.map || {};
 
-    opts = opts || {};
-    // default dircetory is `views`
-    opts.directory = opts.directory || 'views';
-    opts.path = resolve(base, opts.directory);
+        this.options = extend(true, {}, options);
 
-    debug(fmt('path: %s'), opts.path);
-    // default extension to `html`
-    opts.default = opts.default || 'html';
+        this.cache = cache(options.cacheLimit > 0 ? options.cacheLimit : 100);
+        this.engines = {};
 
-    debug(fmt(opts));
-
-    return function *views(next) {
-        if (this.render) return;
-
-        /**
-         * App-specific `locals`, but honor upstream
-         * middlewares that may have already set this.locals.
-         */
-
-        this.locals = this.locals || {};
-
-        /**
-         * Render `view` with `locals`.
-         *
-         * @param {String} view
-         * @param {Object} locals
-         * @return {GeneratorFunction}
-         * @api public
-         */
-
-        this.render = function *(view, locals) {
-            var ext = opts.default;
-            var extname = path.extname(view);
-            var file = view;
-            if (file[file.length - 1] === '/') {
-                file += 'index';
-            }
-            if(!extname){
-                file = fmt('%s.%s', file, ext);
-            }else{
-                ext = extname;
-            }
-            locals = locals || {};
-            locals = assign(locals, this.locals);
-
-            debug(fmt('render `%s` with %j', file, locals));
-
-            if (ext == 'html' && (!opts.map || (opts.map && !opts.map.html))) {
-                yield send(this, join(opts.path, file));
-            } else {
-                var render = cons(opts.path, opts);
-                this.body = yield render(view, locals);
-            }
-            if (undefined === this.body) {
-                throw new Error('Can not render ' + file);
-            }
-            this.type = 'text/html';
-        };
-
-        yield next;
+        debug("Views: constructed");
     }
-};
+
+    read (viewPath, options) {
+        debug("Views: Views.read");
+        if (!viewPath || 'string' !== typeof viewPath) {
+            throw new Error("Param path of the view is required!");
+        }
+        if (!path.isAbsolute(viewPath)) {
+            viewPath = path.join(this.options.path, viewPath);
+        }
+        if (viewPath.indexOf(this.options.path) !== 0) {
+            throw new Error("Access denied, you can only read view files under " + this.options.path);
+        }
+        let extname = path.extname(viewPath);
+        if (!extname) {
+            extname += '.' + defaultEngine;
+            viewPath += extname;
+        }
+        extname = extname.slice(1);
+        debug("Views: extname is " + extname);
+
+        return new Promise((resolve, reject) => {
+            let result = this.cache.get(viewPath);
+            if (result) {
+                debug("Views: use cache file " + viewPath);
+                return resolve({
+                    tpl: result,
+                    extname: extname,
+                });
+            }
+            debug("Views: Reading file " + viewPath);
+            fs.readFile(viewPath, (error, tpl) => {
+                if (error) {
+                    return reject(error);
+                }
+                tpl = tpl.toString();
+                if ('string' !== typeof process.env.NODE_ENV || !process.env.NODE_ENV.match(/^development$/i)) {
+                    debug("Views: set cache file " + viewPath);
+                    this.cache.set(viewPath, tpl);
+                }
+                return resolve({
+                    tpl: tpl,
+                    extname: extname,
+                });
+            });
+        });
+    }
+
+    render (viewPath, locals) {
+        debug("Views: Views.render");
+        return this.read(viewPath, locals).then(result  => {
+            let {tpl, extname} = result;
+            let enginename = extname;
+            if (extname && this.options.map && this.options.map[extname]) {
+                enginename = this.options.map[extname];
+            }
+            let engine;
+            if (this.engines.hasOwnProperty(enginename)) {
+                engine = this.engines[enginename];
+            }
+            else {
+                try {
+                    debug("Views: loading engine " + enginename);
+                    engine = require(enginename);
+                }
+                catch (e) {
+                    debug("Views: load engine " + enginename + " failed : " + e.message);
+                    engine = null;
+                }
+                this.engines[enginename] = engine;
+            }
+            if (!engine) {
+                debug("Views: engine not define, return content directly");
+                return tpl;
+            }
+            else {
+                debug("Views: render by engine " + enginename);
+                return engine.render(tpl, locals)
+            }
+        });
+    }
+}
+
+export default Views;
