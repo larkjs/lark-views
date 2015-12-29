@@ -28,7 +28,6 @@ const debug = (0, _debug3.default)("lark-views");
 const app = new _koa2.default();
 
 const options = {
-	path: 'views',
 	map: {
 		tpl: 'ejs'
 	}
@@ -41,7 +40,7 @@ const tpl = {
 	'd': 'd.jade'
 };
 
-app.use((0, _middleware2.default)(options));
+app.use((0, _middleware2.default)('views', options));
 app.use((function () {
 	var ref = _asyncToGenerator(function* (ctx, next) {
 		var _arr = ['a', 'b', 'c', 'd'];

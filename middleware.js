@@ -11,8 +11,16 @@ import Views 	from './';
 
 const debug = _debug("lark-views");
 
-function middleware (options = {}) {
+function middleware (dirname, options) {
 	debug("Middleware: create middleware");
+  if (!options) {
+    if (dirname instanceof Object) {
+      options = dirname;
+      dirname = null;
+    }
+  }
+  options = options || {};
+  options.path = dirname;
 	if ('string' !== typeof options.path) {
 		options.path = '';
 	}

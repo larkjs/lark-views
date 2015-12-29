@@ -30,10 +30,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const debug = (0, _debug3.default)("lark-views");
 
-function middleware() {
-	let options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
+function middleware(dirname, options) {
 	debug("Middleware: create middleware");
+	if (!options) {
+		if (dirname instanceof Object) {
+			options = dirname;
+			dirname = null;
+		}
+	}
+	options = options || {};
+	options.path = dirname;
 	if ('string' !== typeof options.path) {
 		options.path = '';
 	}
@@ -51,14 +57,14 @@ function middleware() {
 					return ctx.body;
 				});
 
-				return function (_x4, _x5) {
+				return function (_x3, _x4) {
 					return ref.apply(this, arguments);
 				};
 			})();
 			yield next();
 		});
 
-		return function (_x2, _x3) {
+		return function (_x, _x2) {
 			return ref.apply(this, arguments);
 		};
 	})();
