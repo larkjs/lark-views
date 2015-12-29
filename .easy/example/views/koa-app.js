@@ -17,11 +17,11 @@ var _koa2 = _interopRequireDefault(_koa);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var debug = (0, _debug3.default)("lark-views");
+const debug = (0, _debug3.default)("lark-views");
 
-var app = new _koa2.default();
+const app = new _koa2.default();
 
-var options = {
+const options = {
   path: 'views'
 
 };

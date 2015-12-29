@@ -28,10 +28,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } step("next"); }); }; }
 
-var debug = (0, _debug3.default)("lark-views");
+const debug = (0, _debug3.default)("lark-views");
 
 function middleware() {
-	var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	let options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	debug("Middleware: create middleware");
 	if ('string' !== typeof options.path) {
@@ -40,7 +40,7 @@ function middleware() {
 	if (!_path2.default.isAbsolute(options.path)) {
 		options.path = _path2.default.join(_path2.default.dirname((0, _caller2.default)()), options.path);
 	}
-	var views = new _2.default(options);
+	const views = new _2.default(options);
 	return (function () {
 		var ref = _asyncToGenerator(function* (ctx, next) {
 			debug("Middleware: ctx.render enabled!");

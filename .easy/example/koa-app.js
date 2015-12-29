@@ -23,18 +23,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } step("next"); }); }; }
 
-var debug = (0, _debug3.default)("lark-views");
+const debug = (0, _debug3.default)("lark-views");
 
-var app = new _koa2.default();
+const app = new _koa2.default();
 
-var options = {
+const options = {
 	path: 'views',
 	map: {
 		tpl: 'ejs'
 	}
 };
 
-var tpl = {
+const tpl = {
 	'a': 'a.tpl',
 	'b': 'b.js',
 	'c': 'c.html',
@@ -47,7 +47,7 @@ app.use((function () {
 		var _arr = ['a', 'b', 'c', 'd'];
 
 		for (var _i = 0; _i < _arr.length; _i++) {
-			var name = _arr[_i];
+			const name = _arr[_i];
 			if (ctx.url.includes('render=' + name)) {
 				yield ctx.render(tpl[name], { variable: 'request url is ' + ctx.url });
 			}

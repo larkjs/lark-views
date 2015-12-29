@@ -4,7 +4,7 @@
     "description": "Template rendering middleware for koa, supporting many template engines",
     "main": ".easy",
     "engines": {
-        "node": ">=0.12"
+        "node": ">=4.0"
     },
     "scripts": {
         "test": "cd .easy && rm -rf node_modules && ln -s ../node_modules node_modules && ./node_modules/.bin/mocha --require should test/"
