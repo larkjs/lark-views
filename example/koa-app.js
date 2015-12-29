@@ -12,6 +12,7 @@ const debug = _debug("lark-views");
 const app   = new Koa();
 
 const options = {
+    path: 'views',
     map: {
         tpl: 'ejs'
     }
@@ -24,7 +25,7 @@ const tpl = {
 	'd' : 'd.jade',
 }
 
-app.use(views('views', options));
+app.use(views(options));
 app.use(async (ctx, next) => {
 	for (const name of ['a', 'b', 'c', 'd']) {
 		if (ctx.url.includes('render=' + name)) {
