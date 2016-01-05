@@ -15,10 +15,6 @@ var _lruCache = require('lru-cache');
 
 var _lruCache2 = _interopRequireDefault(_lruCache);
 
-var _caller = require('caller');
-
-var _caller2 = _interopRequireDefault(_caller);
-
 var _extend = require('extend');
 
 var _extend2 = _interopRequireDefault(_extend);
@@ -47,7 +43,7 @@ class Views {
             options.path = defaultPath;
         }
         if (!_path2.default.isAbsolute(options.path)) {
-            options.path = _path2.default.join(_path2.default.dirname((0, _caller2.default)()), options.path);
+            options.path = _path2.default.join(_path2.default.dirname(process.mainModule.filename), options.path);
         }
         debug("Views: path is " + options.path);
         if ('string' !== typeof options.default) {

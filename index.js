@@ -5,7 +5,6 @@
 
 import _debug   from 'debug';
 import cache    from 'lru-cache';
-import caller   from 'caller';
 import extend   from 'extend';
 import fs       from 'fs';
 import path     from 'path';
@@ -22,7 +21,7 @@ class Views {
             options.path = defaultPath;
         }
         if (!path.isAbsolute(options.path)) {
-            options.path = path.join(path.dirname(caller()), options.path);
+            options.path = path.join(path.dirname(process.mainModule.filename), options.path);
         }
         debug("Views: path is " + options.path);
         if ('string' !== typeof options.default) {

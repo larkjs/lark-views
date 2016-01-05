@@ -12,10 +12,6 @@ var _debug2 = require('debug');
 
 var _debug3 = _interopRequireDefault(_debug2);
 
-var _caller = require('caller');
-
-var _caller2 = _interopRequireDefault(_caller);
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -36,7 +32,7 @@ function middleware(options) {
 		options.path = '';
 	}
 	if (!_path2.default.isAbsolute(options.path)) {
-		options.path = _path2.default.join(_path2.default.dirname((0, _caller2.default)()), options.path);
+		options.path = _path2.default.join(_path2.default.dirname(process.mainModule.filename), options.path);
 	}
 	const views = new _2.default(options).saveInstance();
 	return (function () {

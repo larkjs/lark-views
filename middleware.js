@@ -5,7 +5,6 @@
 'use strict';
 
 import _debug	from 'debug';
-import caller	from 'caller';
 import path 	from 'path';
 import Views 	from './';
 
@@ -17,7 +16,7 @@ function middleware (options) {
 		options.path = '';
 	}
 	if (!path.isAbsolute(options.path)) {
-		options.path = path.join(path.dirname(caller()), options.path);
+		options.path = path.join(path.dirname(process.mainModule.filename), options.path);
 	}
 	const views = new Views(options).saveInstance();
 	return async (ctx, next) => {

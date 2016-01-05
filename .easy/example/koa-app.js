@@ -25,6 +25,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const debug = (0, _debug3.default)("lark-views");
 
+process.mainModule = module;
+
 const app = new _koa2.default();
 
 const options = {

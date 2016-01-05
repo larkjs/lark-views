@@ -9,6 +9,8 @@ import Koa 		  from 'koa';
 
 const debug = _debug("lark-views");
 
+process.mainModule = module;
+
 const app   = new Koa();
 
 const options = {
