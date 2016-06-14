@@ -65,7 +65,7 @@ For more examples take a look at the [tests](./test/index.js)
 
 * `opts`: see below
 * `opts.map`: map from extname to template engine.
-* `opts.path`: directory from [callerPath](https://github.com/totherik/caller) if it is not an absolute path.
+* `opts.path`: directory path relative from main module file if it is not an absolute path.
 
 #### `middleware([opts)`
 * `opts`: the same as in `views[opts]`;
