@@ -24,8 +24,8 @@ class Views {
             options.path = path.join(path.dirname(process.mainModule.filename), options.path);
         }
         debug("Views: path is " + options.path);
-        if ('string' !== typeof options.default) {
-            options.default = defaultEngine;
+        if ('string' !== typeof options.engine) {
+            options.engine = defaultEngine;
         }
         options.map = options.map || {};
 
@@ -50,7 +50,7 @@ class Views {
         }
         let extname = path.extname(viewPath);
         if (!extname) {
-            extname += '.' + defaultEngine;
+            extname += '.' + this.options.engine;
             viewPath += extname;
         }
         extname = extname.slice(1);
