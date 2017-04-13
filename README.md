@@ -2,7 +2,6 @@
 
 This repository began as a GitHub fork of [queckezz/koa-views](https://github.com/queckezz/koa-views).
 
-
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![NPM downloads][downloads-image]][npm-url]
@@ -21,64 +20,28 @@ $ npm install lark-views
 Use _lark-views_ as a Class.
 
 ```js
-import Views from 'lark-views';
+const Views = require('lark-views');
+
 const views = new Views({
   path: 'views',
   map: {
     tpl: 'ejs',
   }
 });
+
 views.render('a.tpl', { foo: "bar" })
      .then(data => console.log(data))
      .catch(e => console.error(e.stack));
 ```
-
-Use _lark-views_ as a koa middleware
-
-```js
-import views from 'lark-views/middleware';
-import Koa   from 'koa';
-
-const app = new Koa();
-
-// Must be used before any router is used
-app.use(views({
-  path: 'views',
-  map: {
-    tpl: 'ejs',
-  }
-}));
-
-app.use(async (ctx, next) => {
-  await ctx.render('user.tpl', {
-    user: 'John'
-  });
-  await next();
-});
-```
-
-For more examples take a look at the [tests](./test/index.js)
 
 ## API
 
 #### `views([opts])`
 
 * `opts`: see below
-* `opts.map`: map from extname to template engine.
+* `opts.map`: map from extname to template engine name.
 * `opts.path`: directory path relative from main module file if it is not an absolute path.
-
-#### `middleware([opts)`
-* `opts`: the same as in `views[opts]`;
-
-when `middleware(opts)` is called, `Views.instance()` will return the instance created in that middleware
-
-## Debug
-
-Set the `DEBUG` environment variable to `lark-views` when starting your server.
-
-```bash
-$ DEBUG=lark-views
-```
+* `opts.engine`: template engine, must have a method `render(template, data)` which returns final result.
 
 ## License
 
