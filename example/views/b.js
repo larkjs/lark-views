@@ -1,1 +1,1 @@
-console.log("This is static js file b");
+module.exports = 'This is static js file b';

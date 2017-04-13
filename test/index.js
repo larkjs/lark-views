@@ -3,51 +3,46 @@
  **/
 'use strict';
 
-import _debug   from 'debug';
-import app      from '../example/koa-app';
-import test     from 'supertest';
+const path  = require('path');
+const Views = require('..');
+const views = require('../example/app');
 
-const debug   = _debug('lark-views');
-const request = test.agent(app.listen(3000));
+describe('render with engine', () => {
+    it('should be ok initializing in different cases', async () => {
+        let views1 = new Views();
+        let views2 = new Views({});
+        let views3 = new Views({ engine: 'ejs' });
+        let views4 = new Views({ cache: { max: 10} });
+    });
+    it('should response html with ejs', async () => {
+        let result = null;
+        result = await views.render('a.tpl', { variable: 'test' });
+        result.should.be.exactly('This is template a. The variable is "test".\n');
+        result = await views.render(path.join(__dirname, '../example/views', 'a.tpl'), { variable: 'test2' });
+        result.should.be.exactly('This is template a. The variable is "test2".\n');
+        result = await views.render('e', { variable: 'test' });
+        result.should.be.exactly('This is template e.ejs. The variable is "test".\n');
+    });
+    it('should response raw content if not match', async () => {
+        let result = null;
+        result = await views.render('b.js');
+        result.should.be.exactly('module.exports = \'This is static js file b\';\n');
+        result = await views.render('c.html');
+        result.should.be.exactly('<h1>How are you!</h1>\n');
 
-describe('request on render=a', () => {
-    it('should return rendered template a.tpl with ejs', done => {
-        request.get('/?render=a')
-              .expect(200)
-              .expect('This is template a. The variable is "request url is /?render=a".\n', done);
     });
-    it('should return rendered template a.tpl with ejs, using cache', done => {
-        request.get('/?render=a')
-              .expect(200)
-              .expect('This is template a. The variable is "request url is /?render=a".\n', done);
+    it('should response html with pug', async () => {
+        let result = await views.render('d.pug');
+        result.should.be.exactly('<!DOCTYPE html><html lang="en"><head><title></title><script type="text/javascript">if (foo) bar(1 + 5)</script></head><body><h1>Jade - node template engine</h1><div class="col" id="container"><p>Get on it!</p><p>Jade is a terse and simple templating language with a strong focus on performance and powerful features.</p></div></body></html>');
     });
-});
-
-describe('request on render=b', () => {
-    it('should return template b.js without rendering', done => {
-        request.get('/?render=b')
-              .expect(200)
-              .expect('"use strict";\n\nconsole.log("This is static js file b");', done);
-    });
-});
-
-describe('request on render=c', () => {
-    it('should return template c.html without rendering', done => {
-        request.get('/?render=c')
-              .expect(200)
-              .expect('<h1>How are you!</h1>\n', done);
-    });
-});
-
-describe('request on render=d', () => {
-    it('should return template d.jade with jade', done => {
-        request.get('/?render=d')
-              .expect(200)
-              .expect('<!DOCTYPE html><html lang="en"><head><title></title><script type="text/javascript">if (foo) bar(1 + 5)</script></head><body><h1>Jade - node template engine</h1><div id="container" class="col"><p>Get on it!</p><p>Jade is a terse and simple templating language with a\nstrong focus on performance and powerful features.</p></div></body></html>', done);
-    });
-    it('should return template d.jade with jade, using cache', done => {
-        request.get('/?render=d')
-              .expect(200)
-              .expect('<!DOCTYPE html><html lang="en"><head><title></title><script type="text/javascript">if (foo) bar(1 + 5)</script></head><body><h1>Jade - node template engine</h1><div id="container" class="col"><p>Get on it!</p><p>Jade is a terse and simple templating language with a\nstrong focus on performance and powerful features.</p></div></body></html>', done);
+    it('should throw if file not exist', async () => {
+        let error = {};
+        try {
+            await views.render('no-exist');
+        }
+        catch (e) {
+            error = e;
+        }
+        error.should.be.an.instanceof(Error);
     });
 });
