@@ -1,24 +1,27 @@
 {
   "name": "lark-views",
-  "version": "0.3.2",
+  "version": "2.0.0",
   "description": "Template rendering middleware for koa, supporting many template engines",
   "main": "index.js",
+  "engines": {
+    "node": ">=7.4"
+  },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --harmony --require should test/"
+    "test": "./node_modules/.bin/eslint index.js example/** source/** && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should --recursive test",
+    "debug": "node --inspect-brk=9229 examplapp.js"
   },
   "dependencies": {
-    "co-views": "~0.2.0",
-    "debug": "^2.1.1",
-    "koa-send": "^1.2.4",
-    "object-assign": "^2.0.0"
+    "extend": "^3.0.0",
+    "lru-cache": "^4.0.0",
+    "vi-misc": "^1.2.0"
   },
   "devDependencies": {
-    "jade": "^1.8.0",
-    "koa": "^0.14.0",
-    "mocha": "^2.0.1",
-    "should": "^4.3.0",
-    "supertest": "^0.15.0",
-    "underscore": "~1.7.0"
+    "ejs": "^2.5.6",
+    "eslint": "^3.17.1",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^3.2.0",
+    "pug": "^2.0.0-beta11",
+    "should": "^11.2.1"
   },
   "repository": {
     "type": "git",
@@ -28,11 +31,10 @@
     "koa",
     "render",
     "views",
-    "app-wide",
     "templating",
-    "templates"
+    "template"
   ],
-  "author": "mdemo",
+  "author": "Sun Haohao",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/larkjs/lark-views/issues"

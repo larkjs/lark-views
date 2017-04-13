@@ -2,7 +2,6 @@
 
 This repository began as a GitHub fork of [queckezz/koa-views](https://github.com/queckezz/koa-views).
 
-
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![NPM downloads][downloads-image]][npm-url]
@@ -18,42 +17,31 @@ $ npm install lark-views
 
 ## Example
 
+Use _lark-views_ as a Class.
+
 ```js
-// Must be used before any router is used
-app.use(views('views', {
+const Views = require('lark-views');
+
+const views = new Views({
+  path: 'views',
   map: {
-    html: underscore
+    tpl: 'ejs',
   }
-}));
-
-app.use(function* (next) {
-  this.locals = {
-    session: this.session,
-    title: 'app'
-  };
-
-  yield this.render('user', {
-    user: 'John'
-  });
 });
-```
 
-For more examples take a look at the [tests](./test/index.js)
+views.render('a.tpl', { foo: "bar" })
+     .then(data => console.log(data))
+     .catch(e => console.error(e.stack));
+```
 
 ## API
 
-#### `views([path, opts])`
+#### `views([opts])`
 
-* `path ()`: directory form [rootPath](https://github.com/inxilpro/node-app-root-path)
-* `opts`: these options go straight to [co-views](https://github.com/visionmedia/co-views).
-
-## Debug
-
-Set the `DEBUG` environment variable to `lark-views` when starting your server.
-
-```bash
-$ DEBUG=lark-views
-```
+* `opts`: see below
+* `opts.map`: map from extname to template engine name.
+* `opts.path`: directory path relative from main module file if it is not an absolute path.
+* `opts.engine`: template engine, must have a method `render(template, data)` which returns final result.
 
 ## License
 
