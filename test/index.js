@@ -44,5 +44,18 @@ describe('render with engine', () => {
             error = e;
         }
         error.should.be.an.instanceof(Error);
+        error.should.have.property('message');
+        error.message.startsWith('ENOENT: no such file or directory').should.be.ok;
+    });
+    it('should throw if template engine not installed', async () => {
+        let error = {};
+        try {
+            await views.render('f.jade');
+        }
+        catch (e) {
+            error = e;
+        }
+        error.should.be.an.instanceof(Error)
+             .with.property('message', "Can not load template engine jade, try '$ npm install jade' to install");
     });
 });

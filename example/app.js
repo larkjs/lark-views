@@ -14,6 +14,7 @@ const views = new Views({
         tpl: 'ejs',
         ejs: 'ejs',
         pug: 'pug',
+        jade: 'jade',
     }
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "lark-views",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Template rendering middleware for koa, supporting many template engines",
   "main": "index.js",
   "engines": {

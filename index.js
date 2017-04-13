@@ -73,7 +73,15 @@ class Views {
         if (!engineName) {
             return template;
         }
-        let engine = this.engines[engineName] || require(engineName);
+        let engine = this.engines[engineName];
+        if (!engine) {
+            try {
+                engine = require(engineName);
+            }
+            catch (e) {
+                throw new Error(`Can not load template engine ${engineName}, try '$ npm install ${engineName}' to install`);
+            }
+        }
         return engine.render(template, data);
     }
 }
